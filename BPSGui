@@ -62,7 +62,7 @@ function Library:CreateWindow(title)
     ControlLayout.FillDirection = Enum.FillDirection.Horizontal
     ControlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
     ControlLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    ControlLayout.Padding = UDim.new(0, 5)
+    ControlLayout.Padding = UDim.new(0, 4)
 
     local function CreateControlBtn(txt)
         local b = Instance.new("TextButton")
