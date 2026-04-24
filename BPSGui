@@ -77,20 +77,6 @@ function Library:CreateWindow(title)
         Title.Text = title
     end
 
-    local minimized = false
-    local lastClick = 0
-    Title.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            local currentTime = tick()
-            if currentTime - lastClick < 0.3 then
-                minimized = not minimized
-                local targetSize = minimized and UDim2.new(0, 550, 0, 26) or UDim2.new(0, 550, 0, 300)
-                TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize}):Play()
-            end
-            lastClick = currentTime
-        end
-    end)
-
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
     TabContainer.Parent = Main
@@ -110,6 +96,29 @@ function Library:CreateWindow(title)
     local PageFolder = Instance.new("Folder")
     PageFolder.Name = "Pages"
     PageFolder.Parent = Main
+
+    local minimized = false
+    local lastClick = 0
+    TopBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            local currentTime = tick()
+            if currentTime - lastClick < 0.3 then
+                minimized = not minimized
+                local targetSize = minimized and UDim2.new(0, 550, 0, 26) or UDim2.new(0, 550, 0, 300)
+                
+                if minimized then
+                    TabContainer.Visible = false
+                    PageFolder.Parent = nil
+                else
+                    PageFolder.Parent = Main
+                    task.delay(0.3, function() if not minimized then TabContainer.Visible = true end end)
+                end
+                
+                TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize}):Play()
+            end
+            lastClick = currentTime
+        end
+    end)
 
     local dragging, dragInput, dragStart, startPos
     TopBar.InputBegan:Connect(function(input)
