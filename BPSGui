@@ -9,6 +9,7 @@ function Library:CreateWindow(title)
     ScreenGui.Name = "CustomLibrary"
     ScreenGui.Parent = CoreGui
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.ResetOnSpawn = false
 
     local Main = Instance.new("Frame")
     Main.Name = "Main"
@@ -45,7 +46,7 @@ function Library:CreateWindow(title)
         label.Text = ""
         for i = 1, #text do
             label.Text = string.sub(text, 1, i)
-            task.wait(0.02)
+            task.wait(0.01)
         end
     end
 
@@ -149,9 +150,12 @@ function Library:CreateWindow(title)
             Button.TextColor3 = Color3.fromRGB(220, 220, 220)
             Button.TextSize = 13
 
-            Button.MouseEnter:Connect(function()
-                Typewrite(Title, desc or text)
-            end)
+            local Stroke = Instance.new("UIStroke")
+            Stroke.Thickness = 1
+            Stroke.Color = Color3.fromRGB(45, 45, 45)
+            Stroke.Parent = Button
+
+            Button.MouseEnter:Connect(function() Typewrite(Title, desc or text) end)
             Button.MouseLeave:Connect(ResetTitle)
             Button.MouseButton1Click:Connect(callback)
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
@@ -168,6 +172,11 @@ function Library:CreateWindow(title)
             Toggle.TextColor3 = Color3.fromRGB(220, 220, 220)
             Toggle.TextSize = 13
 
+            local Stroke = Instance.new("UIStroke")
+            Stroke.Thickness = 1
+            Stroke.Color = Color3.fromRGB(45, 45, 45)
+            Stroke.Parent = Toggle
+
             local Indicator = Instance.new("Frame")
             Indicator.Size = UDim2.new(1, 0, 0, 2)
             Indicator.Position = UDim2.new(0, 0, 1, -2)
@@ -175,9 +184,7 @@ function Library:CreateWindow(title)
             Indicator.BackgroundColor3 = state and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
             Indicator.Parent = Toggle
 
-            Toggle.MouseEnter:Connect(function()
-                Typewrite(Title, desc or text)
-            end)
+            Toggle.MouseEnter:Connect(function() Typewrite(Title, desc or text) end)
             Toggle.MouseLeave:Connect(ResetTitle)
             Toggle.MouseButton1Click:Connect(function()
                 state = not state
@@ -204,13 +211,9 @@ function Library:CreateWindow(title)
             Stroke.Color = Color3.fromRGB(45, 45, 45)
             Stroke.Parent = Box
 
-            Box.MouseEnter:Connect(function()
-                Typewrite(Title, desc or placeholder)
-            end)
+            Box.MouseEnter:Connect(function() Typewrite(Title, desc or placeholder) end)
             Box.MouseLeave:Connect(ResetTitle)
-            Box.FocusLost:Connect(function()
-                callback(Box.Text)
-            end)
+            Box.FocusLost:Connect(function() callback(Box.Text) end)
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
