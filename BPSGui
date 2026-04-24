@@ -42,7 +42,7 @@ function Library:CreateWindow(title)
     Title.Parent = TopBar
     Title.BackgroundTransparency = 1
     Title.Position = UDim2.new(0, 10, 0, 0)
-    Title.Size = UDim2.new(1, -60, 1, 0)
+    Title.Size = UDim2.new(1, -70, 1, 0)
     Title.Font = Enum.Font.Code
     Title.Text = title or "UI Library"
     Title.TextColor3 = Color3.fromRGB(220, 220, 220)
@@ -177,16 +177,17 @@ function Library:CreateWindow(title)
         Page.Name = name .. "Page"
         Page.Parent = PageFolder
         Page.BackgroundTransparency = 1
-        Page.Position = UDim2.new(0, 8, 0, 35)
-        Page.Size = UDim2.new(1, -16, 1, -70)
+        Page.Position = UDim2.new(0, 10, 0, 40)
+        Page.Size = UDim2.new(1, -20, 1, -85)
         Page.Visible = firstPage
         Page.ScrollBarThickness = 0
         Page.CanvasSize = UDim2.new(0, 0, 0, 0)
 
         local PageGrid = Instance.new("UIGridLayout")
         PageGrid.Parent = Page
-        PageGrid.CellPadding = UDim2.new(0, 5, 0, 5)
-        PageGrid.CellSize = UDim2.new(0, 128, 0, 28)
+        PageGrid.SortOrder = Enum.SortOrder.LayoutOrder
+        PageGrid.CellPadding = UDim2.new(0, 10, 0, 10)
+        PageGrid.CellSize = UDim2.new(0, 125, 0, 30)
 
         local TabButton = Instance.new("TextButton")
         TabButton.Parent = TabContainer
