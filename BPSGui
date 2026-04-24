@@ -42,12 +42,42 @@ function Library:CreateWindow(title)
     Title.Parent = TopBar
     Title.BackgroundTransparency = 1
     Title.Position = UDim2.new(0, 10, 0, 0)
-    Title.Size = UDim2.new(1, -10, 1, 0)
+    Title.Size = UDim2.new(1, -60, 1, 0)
     Title.Font = Enum.Font.Code
     Title.Text = title or "UI Library"
     Title.TextColor3 = Color3.fromRGB(220, 220, 220)
     Title.TextSize = 13
     Title.TextXAlignment = Enum.TextXAlignment.Left
+
+    local Controls = Instance.new("Frame")
+    Controls.Name = "Controls"
+    Controls.Parent = TopBar
+    Controls.BackgroundTransparency = 1
+    Controls.Position = UDim2.new(1, -55, 0, 0)
+    Controls.Size = UDim2.new(0, 50, 1, 0)
+    Controls.Visible = false
+
+    local ControlLayout = Instance.new("UIListLayout")
+    ControlLayout.Parent = Controls
+    ControlLayout.FillDirection = Enum.FillDirection.Horizontal
+    ControlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ControlLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    ControlLayout.Padding = UDim.new(0, 5)
+
+    local function CreateControlBtn(txt)
+        local b = Instance.new("TextButton")
+        b.Size = UDim2.new(0, 20, 1, 0)
+        b.BackgroundTransparency = 1
+        b.Font = Enum.Font.Code
+        b.Text = txt
+        b.TextColor3 = Color3.fromRGB(255, 255, 255)
+        b.TextSize = 14
+        b.Parent = Controls
+        return b
+    end
+
+    local minBtn = CreateControlBtn("^")
+    local maxBtn = CreateControlBtn("□")
 
     local RainbowLine = Instance.new("Frame")
     RainbowLine.Name = "RainbowLine"
@@ -97,27 +127,27 @@ function Library:CreateWindow(title)
     PageFolder.Name = "Pages"
     PageFolder.Parent = Main
 
-    local minimized = false
     local lastClick = 0
     TopBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             local currentTime = tick()
             if currentTime - lastClick < 0.3 then
-                minimized = not minimized
-                local targetSize = minimized and UDim2.new(0, 550, 0, 26) or UDim2.new(0, 550, 0, 300)
-                
-                if minimized then
-                    TabContainer.Visible = false
-                    PageFolder.Parent = nil
-                else
-                    PageFolder.Parent = Main
-                    task.delay(0.3, function() if not minimized then TabContainer.Visible = true end end)
-                end
-                
-                TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize}):Play()
+                Controls.Visible = not Controls.Visible
             end
             lastClick = currentTime
         end
+    end)
+
+    minBtn.MouseButton1Click:Connect(function()
+        TabContainer.Visible = false
+        PageFolder.Parent = nil
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 550, 0, 26)}):Play()
+    end)
+
+    maxBtn.MouseButton1Click:Connect(function()
+        PageFolder.Parent = Main
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 550, 0, 300)}):Play()
+        task.delay(0.3, function() TabContainer.Visible = true end)
     end)
 
     local dragging, dragInput, dragStart, startPos
@@ -252,9 +282,7 @@ function Library:CreateWindow(title)
 
             Box.MouseEnter:Connect(function() Typewrite(desc or placeholder) end)
             Box.MouseLeave:Connect(ResetTitle)
-            Box.FocusLost:Connect(function()
-                callback(Box.Text)
-            end)
+            Box.FocusLost:Connect(function() callback(Box.Text) end)
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
