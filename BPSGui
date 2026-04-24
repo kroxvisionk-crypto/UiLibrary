@@ -5,6 +5,10 @@ local RunService = game:GetService("RunService")
 
 local Library = {}
 
+if CoreGui:FindFirstChild("CustomLibrary") then
+    CoreGui:FindFirstChild("CustomLibrary"):Destroy()
+end
+
 function Library:CreateWindow(title)
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "CustomLibrary"
@@ -19,10 +23,12 @@ function Library:CreateWindow(title)
     Main.Position = UDim2.new(0.5, -275, 0.5, -150)
     Main.Size = UDim2.new(0, 550, 0, 300)
     Main.BorderSizePixel = 0
+    Main.ClipsDescendants = true
 
     local MainStroke = Instance.new("UIStroke")
     MainStroke.Thickness = 1
     MainStroke.Color = Color3.fromRGB(45, 45, 45)
+    MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     MainStroke.Parent = Main
 
     local TopBar = Instance.new("Frame")
@@ -51,8 +57,7 @@ function Library:CreateWindow(title)
     RainbowLine.Size = UDim2.new(1, 0, 0, 1)
 
     RunService.RenderStepped:Connect(function()
-        local hue = tick() % 5 / 5
-        RainbowLine.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
+        RainbowLine.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
     end)
 
     local currentTypewrite = 0
@@ -71,6 +76,20 @@ function Library:CreateWindow(title)
         currentTypewrite = currentTypewrite + 1
         Title.Text = title
     end
+
+    local minimized = false
+    local lastClick = 0
+    Title.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            local currentTime = tick()
+            if currentTime - lastClick < 0.3 then
+                minimized = not minimized
+                local targetSize = minimized and UDim2.new(0, 550, 0, 26) or UDim2.new(0, 550, 0, 300)
+                TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize}):Play()
+            end
+            lastClick = currentTime
+        end
+    end)
 
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
@@ -154,6 +173,14 @@ function Library:CreateWindow(title)
 
         local Elements = {}
 
+        local function AddStroke(parent)
+            local Stroke = Instance.new("UIStroke")
+            Stroke.Thickness = 1
+            Stroke.Color = Color3.fromRGB(45, 45, 45)
+            Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            Stroke.Parent = parent
+        end
+
         function Elements:CreateButton(text, desc, callback)
             local Button = Instance.new("TextButton")
             Button.Parent = Page
@@ -163,11 +190,7 @@ function Library:CreateWindow(title)
             Button.Text = text
             Button.TextColor3 = Color3.fromRGB(200, 200, 200)
             Button.TextSize = 13
-
-            local Stroke = Instance.new("UIStroke")
-            Stroke.Thickness = 1
-            Stroke.Color = Color3.fromRGB(45, 45, 45)
-            Stroke.Parent = Button
+            AddStroke(Button)
 
             Button.MouseEnter:Connect(function() Typewrite(desc or text) end)
             Button.MouseLeave:Connect(ResetTitle)
@@ -185,11 +208,7 @@ function Library:CreateWindow(title)
             Toggle.Text = text
             Toggle.TextColor3 = Color3.fromRGB(200, 200, 200)
             Toggle.TextSize = 13
-
-            local Stroke = Instance.new("UIStroke")
-            Stroke.Thickness = 1
-            Stroke.Color = Color3.fromRGB(45, 45, 45)
-            Stroke.Parent = Toggle
+            AddStroke(Toggle)
 
             local Indicator = Instance.new("Frame")
             Indicator.Size = UDim2.new(1, 0, 0, 1)
@@ -220,15 +239,11 @@ function Library:CreateWindow(title)
             Box.TextColor3 = Color3.fromRGB(255, 255, 255)
             Box.TextSize = 13
             Box.ClearTextOnFocus = false
-
-            local Stroke = Instance.new("UIStroke")
-            Stroke.Thickness = 1
-            Stroke.Color = Color3.fromRGB(45, 45, 45)
-            Stroke.Parent = Box
+            AddStroke(Box)
 
             Box.MouseEnter:Connect(function() Typewrite(desc or placeholder) end)
             Box.MouseLeave:Connect(ResetTitle)
-            Box.FocusLost:Connect(function(enter)
+            Box.FocusLost:Connect(function()
                 callback(Box.Text)
             end)
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
