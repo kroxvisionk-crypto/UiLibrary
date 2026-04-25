@@ -57,6 +57,36 @@ function Library:CreateWindow(title)
     Title.TextSize = 14
     Title.TextXAlignment = Enum.TextXAlignment.Left
 
+    local Controls = Instance.new("Frame")
+    Controls.Name = "Controls"
+    Controls.Parent = TopBar
+    Controls.BackgroundTransparency = 1
+    Controls.Position = UDim2.new(1, -60, 0, 0)
+    Controls.Size = UDim2.new(0, 50, 1, 0)
+
+    local ControlLayout = Instance.new("UIListLayout")
+    ControlLayout.Parent = Controls
+    ControlLayout.FillDirection = Enum.FillDirection.Horizontal
+    ControlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ControlLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    ControlLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    ControlLayout.Padding = UDim.new(0, 8)
+
+    local function CreateControlBtn(txt)
+        local b = Instance.new("TextButton")
+        b.Size = UDim2.new(0, 18, 0, 18)
+        b.BackgroundTransparency = 1
+        b.Font = Enum.Font.Code
+        b.Text = txt
+        b.TextColor3 = Color3.fromRGB(150, 150, 150)
+        b.TextSize = 16
+        b.Parent = Controls
+        return b
+    end
+
+    local minBtn = CreateControlBtn("-")
+    local maxBtn = CreateControlBtn("+")
+
     local RainbowLine = Instance.new("Frame")
     RainbowLine.Name = "RainbowLine"
     RainbowLine.Parent = TopBar
@@ -104,6 +134,18 @@ function Library:CreateWindow(title)
     local PageFolder = Instance.new("Folder")
     PageFolder.Name = "Pages"
     PageFolder.Parent = Main
+
+    minBtn.MouseButton1Click:Connect(function()
+        TabContainer.Visible = false
+        PageFolder.Parent = nil
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 550, 0, 30)}):Play()
+    end)
+
+    maxBtn.MouseButton1Click:Connect(function()
+        PageFolder.Parent = Main
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 550, 0, 300)}):Play()
+        task.delay(0.3, function() TabContainer.Visible = true end)
+    end)
 
     local dragging, dragStart, startPos
     TopBar.InputBegan:Connect(function(input)
@@ -180,6 +222,10 @@ function Library:CreateWindow(title)
         local Elements = {}
 
         local function StyleElement(obj)
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 4)
+            corner.Parent = obj
+
             local stroke = Instance.new("UIStroke")
             stroke.Thickness = 1
             stroke.Color = Color3.fromRGB(40, 40, 45)
