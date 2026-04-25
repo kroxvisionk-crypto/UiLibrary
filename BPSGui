@@ -38,16 +38,34 @@ function Library:CreateWindow(title)
     TopBar.Size = UDim2.new(1, 0, 0, 25)
     TopBar.BorderSizePixel = 0
 
-    local Title = Instance.new("TextLabel")
-    Title.Parent = TopBar
-    Title.BackgroundTransparency = 1
-    Title.Position = UDim2.new(0, 10, 0, 0)
-    Title.Size = UDim2.new(1, -70, 1, 0)
-    Title.Font = Enum.Font.Code
-    Title.Text = title or "UI Library"
-    Title.TextColor3 = Color3.fromRGB(220, 220, 220)
-    Title.TextSize = 13
-    Title.TextXAlignment = Enum.TextXAlignment.Left
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Parent = TopBar
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Position = UDim2.new(0, 10, 0, 0)
+    TitleLabel.Size = UDim2.new(1, -70, 1, 0)
+    TitleLabel.Font = Enum.Font.Code
+    TitleLabel.Text = title or "UI Library"
+    TitleLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+    TitleLabel.TextSize = 13
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- TYPEWRITER LOGIC
+    local currentTypewrite = 0
+    local function Typewrite(text)
+        currentTypewrite = currentTypewrite + 1
+        local thisId = currentTypewrite
+        TitleLabel.Text = ""
+        for i = 1, #text do
+            if thisId ~= currentTypewrite then return end
+            TitleLabel.Text = string.sub(text, 1, i)
+            task.wait(0.01)
+        end
+    end
+
+    local function ResetTitle()
+        currentTypewrite = currentTypewrite + 1
+        TitleLabel.Text = title
+    end
 
     local Controls = Instance.new("Frame")
     Controls.Name = "Controls"
@@ -102,13 +120,12 @@ function Library:CreateWindow(title)
     PageFolder.Name = "Pages"
     PageFolder.Parent = Main
 
+    -- Dragging & Window Controls
     local lastClick = 0
     TopBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             local currentTime = tick()
-            if currentTime - lastClick < 0.3 then
-                Controls.Visible = not Controls.Visible
-            end
+            if currentTime - lastClick < 0.3 then Controls.Visible = not Controls.Visible end
             lastClick = currentTime
         end
     end)
@@ -142,9 +159,7 @@ function Library:CreateWindow(title)
     end)
     
     UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
     end)
 
     local Tabs = {}
@@ -197,10 +212,9 @@ function Library:CreateWindow(title)
             Stroke.Color = Color3.fromRGB(45, 45, 45)
             Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             Stroke.Parent = parent
-            return Stroke
         end
 
-        function Elements:CreateButton(text, callback)
+        function Elements:CreateButton(text, desc, callback)
             local Button = Instance.new("TextButton")
             Button.Parent = Page
             Button.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
@@ -210,11 +224,14 @@ function Library:CreateWindow(title)
             Button.TextColor3 = Color3.fromRGB(200, 200, 200)
             Button.TextSize = 13
             AddStroke(Button)
+            
+            Button.MouseEnter:Connect(function() Typewrite(desc or text) end)
+            Button.MouseLeave:Connect(ResetTitle)
             Button.MouseButton1Click:Connect(callback)
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
-        function Elements:CreateToggle(text, default, callback)
+        function Elements:CreateToggle(text, desc, default, callback)
             local state = default
             local Toggle = Instance.new("TextButton")
             Toggle.Parent = Page
@@ -233,6 +250,8 @@ function Library:CreateWindow(title)
             Indicator.BackgroundColor3 = state and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 60, 60)
             Indicator.Parent = Toggle
 
+            Toggle.MouseEnter:Connect(function() Typewrite(desc or text) end)
+            Toggle.MouseLeave:Connect(ResetTitle)
             Toggle.MouseButton1Click:Connect(function()
                 state = not state
                 Indicator.BackgroundColor3 = state and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 60, 60)
@@ -241,7 +260,7 @@ function Library:CreateWindow(title)
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
-        function Elements:CreateTextBox(placeholder, callback)
+        function Elements:CreateTextBox(placeholder, desc, callback)
             local Box = Instance.new("TextBox")
             Box.Parent = Page
             Box.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
@@ -254,6 +273,8 @@ function Library:CreateWindow(title)
             Box.ClearTextOnFocus = false
             AddStroke(Box)
 
+            Box.MouseEnter:Connect(function() Typewrite(desc or placeholder) end)
+            Box.MouseLeave:Connect(ResetTitle)
             Box.FocusLost:Connect(function(enterPressed)
                 local input = Box.Text
                 Box.Text = ""
@@ -262,7 +283,7 @@ function Library:CreateWindow(title)
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
-        function Elements:CreateDropdown(name, options, callback)
+        function Elements:CreateDropdown(name, desc, options, callback)
             local Dropdown = Instance.new("TextButton")
             Dropdown.Parent = Page
             Dropdown.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
@@ -282,7 +303,6 @@ function Library:CreateWindow(title)
             Container.Visible = false
             Container.ZIndex = 50
             Container.ScrollBarThickness = 2
-            Container.ScrollBarImageColor3 = Color3.fromRGB(45, 45, 45)
             AddStroke(Container)
 
             local UIList = Instance.new("UIListLayout")
@@ -290,6 +310,8 @@ function Library:CreateWindow(title)
             UIList.SortOrder = Enum.SortOrder.LayoutOrder
 
             local open = false
+            Dropdown.MouseEnter:Connect(function() Typewrite(desc or name) end)
+            Dropdown.MouseLeave:Connect(ResetTitle)
             Dropdown.MouseButton1Click:Connect(function()
                 open = not open
                 Container.Visible = open
@@ -322,9 +344,8 @@ function Library:CreateWindow(title)
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
-        function Elements:CreateBind(name, defaultBind, callback)
+        function Elements:CreateBind(name, desc, defaultBind, callback)
             local currentBind = defaultBind
-            
             local BindFrame = Instance.new("Frame")
             BindFrame.Parent = Page
             BindFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -355,6 +376,8 @@ function Library:CreateWindow(title)
             BindLabel.TextSize = 12
             AddStroke(BindLabel)
 
+            BindBox.MouseEnter:Connect(function() Typewrite(desc or name) end)
+            BindBox.MouseLeave:Connect(ResetTitle)
             BindBox.FocusLost:Connect(function(enterPressed)
                 if enterPressed then
                     local newKey = BindBox.Text:upper()
@@ -367,11 +390,8 @@ function Library:CreateWindow(title)
             end)
 
             UIS.InputBegan:Connect(function(input, gpe)
-                if not gpe and input.KeyCode == currentBind then
-                    callback()
-                end
+                if not gpe and input.KeyCode == currentBind then callback() end
             end)
-            
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
