@@ -180,10 +180,6 @@ function Library:CreateWindow(title)
         local Elements = {}
 
         local function StyleElement(obj)
-            local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(0, 4)
-            corner.Parent = obj
-
             local stroke = Instance.new("UIStroke")
             stroke.Thickness = 1
             stroke.Color = Color3.fromRGB(40, 40, 45)
