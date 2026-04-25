@@ -19,41 +19,49 @@ function Library:CreateWindow(title)
     local Main = Instance.new("Frame")
     Main.Name = "Main"
     Main.Parent = ScreenGui
-    Main.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+    Main.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
     Main.Position = UDim2.new(0.5, -275, 0.5, -150)
     Main.Size = UDim2.new(0, 550, 0, 300)
     Main.BorderSizePixel = 0
     Main.ClipsDescendants = true
 
+    local MainCorner = Instance.new("UICorner")
+    MainCorner.CornerRadius = UDim.new(0, 6)
+    MainCorner.Parent = Main
+
     local MainStroke = Instance.new("UIStroke")
-    MainStroke.Thickness = 1
-    MainStroke.Color = Color3.fromRGB(45, 45, 45)
+    MainStroke.Thickness = 1.2
+    MainStroke.Color = Color3.fromRGB(45, 45, 50)
     MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     MainStroke.Parent = Main
 
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
     TopBar.Parent = Main
-    TopBar.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
-    TopBar.Size = UDim2.new(1, 0, 0, 25)
+    TopBar.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
+    TopBar.Size = UDim2.new(1, 0, 0, 30)
     TopBar.BorderSizePixel = 0
+
+    local TopCorner = Instance.new("UICorner")
+    TopCorner.CornerRadius = UDim.new(0, 6)
+    TopCorner.Parent = TopBar
 
     local Title = Instance.new("TextLabel")
     Title.Parent = TopBar
     Title.BackgroundTransparency = 1
-    Title.Position = UDim2.new(0, 10, 0, 0)
-    Title.Size = UDim2.new(1, -70, 1, 0)
+    Title.Position = UDim2.new(0, 12, 0, 0)
+    Title.Size = UDim2.new(1, -80, 1, 0)
     Title.Font = Enum.Font.Code
     Title.Text = title or "UI Library"
-    Title.TextColor3 = Color3.fromRGB(220, 220, 220)
-    Title.TextSize = 13
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 14
     Title.TextXAlignment = Enum.TextXAlignment.Left
 
     local Controls = Instance.new("Frame")
     Controls.Name = "Controls"
     Controls.Parent = TopBar
     Controls.BackgroundTransparency = 1
-    Controls.Position = UDim2.new(1, -55, 0, 0)
+    Controls.Position = UDim2.new(1, -60, 0, 0)
     Controls.Size = UDim2.new(0, 50, 1, 0)
     Controls.Visible = false
 
@@ -61,33 +69,34 @@ function Library:CreateWindow(title)
     ControlLayout.Parent = Controls
     ControlLayout.FillDirection = Enum.FillDirection.Horizontal
     ControlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ControlLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     ControlLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    ControlLayout.Padding = UDim.new(0, 4)
+    ControlLayout.Padding = UDim.new(0, 8)
 
     local function CreateControlBtn(txt)
         local b = Instance.new("TextButton")
-        b.Size = UDim2.new(0, 20, 1, 0)
+        b.Size = UDim2.new(0, 18, 0, 18)
         b.BackgroundTransparency = 1
         b.Font = Enum.Font.Code
         b.Text = txt
-        b.TextColor3 = Color3.fromRGB(255, 255, 255)
+        b.TextColor3 = Color3.fromRGB(150, 150, 150)
         b.TextSize = 14
         b.Parent = Controls
         return b
     end
 
-    local minBtn = CreateControlBtn("^")
-    local maxBtn = CreateControlBtn("□")
+    local minBtn = CreateControlBtn("-")
+    local maxBtn = CreateControlBtn("+")
 
     local RainbowLine = Instance.new("Frame")
     RainbowLine.Name = "RainbowLine"
     RainbowLine.Parent = TopBar
     RainbowLine.BorderSizePixel = 0
-    RainbowLine.Position = UDim2.new(0, 0, 1, 0)
+    RainbowLine.Position = UDim2.new(0, 0, 1, -1)
     RainbowLine.Size = UDim2.new(1, 0, 0, 1)
 
     RunService.RenderStepped:Connect(function()
-        RainbowLine.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+        RainbowLine.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 0.8, 1)
     end)
 
     local currentTypewrite = 0
@@ -111,8 +120,8 @@ function Library:CreateWindow(title)
     TabContainer.Name = "TabContainer"
     TabContainer.Parent = Main
     TabContainer.BackgroundTransparency = 1
-    TabContainer.Position = UDim2.new(0, 5, 1, -25)
-    TabContainer.Size = UDim2.new(1, -10, 0, 22)
+    TabContainer.Position = UDim2.new(0, 10, 1, -30)
+    TabContainer.Size = UDim2.new(1, -20, 0, 25)
     TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     TabContainer.ScrollBarThickness = 0
     TabContainer.ScrollingDirection = Enum.ScrollingDirection.X
@@ -121,7 +130,8 @@ function Library:CreateWindow(title)
     TabList.Parent = TabContainer
     TabList.FillDirection = Enum.FillDirection.Horizontal
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
-    TabList.Padding = UDim.new(0, 12)
+    TabList.VerticalAlignment = Enum.VerticalAlignment.Center
+    TabList.Padding = UDim.new(0, 15)
 
     local PageFolder = Instance.new("Folder")
     PageFolder.Name = "Pages"
@@ -141,12 +151,12 @@ function Library:CreateWindow(title)
     minBtn.MouseButton1Click:Connect(function()
         TabContainer.Visible = false
         PageFolder.Parent = nil
-        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 550, 0, 26)}):Play()
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 550, 0, 30)}):Play()
     end)
 
     maxBtn.MouseButton1Click:Connect(function()
         PageFolder.Parent = Main
-        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 550, 0, 300)}):Play()
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 550, 0, 300)}):Play()
         task.delay(0.3, function() TabContainer.Visible = true end)
     end)
 
@@ -156,9 +166,6 @@ function Library:CreateWindow(title)
             dragging = true
             dragStart = input.Position
             startPos = Main.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging = false end
-            end)
         end
     end)
 
@@ -169,44 +176,52 @@ function Library:CreateWindow(title)
         end
     end)
 
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+
     local Tabs = {}
     local firstPage = true
 
-    function Tabs:CreateTab(name)
+    function Tabs:AddTab(name)
         local Page = Instance.new("ScrollingFrame")
         Page.Name = name .. "Page"
         Page.Parent = PageFolder
         Page.BackgroundTransparency = 1
-        Page.Position = UDim2.new(0, 10, 0, 40)
-        Page.Size = UDim2.new(1, -20, 1, -85)
+        Page.Position = UDim2.new(0, 15, 0, 45)
+        Page.Size = UDim2.new(1, -30, 1, -85)
         Page.Visible = firstPage
-        Page.ScrollBarThickness = 0
+        Page.ScrollBarThickness = 2
+        Page.ScrollBarImageColor3 = Color3.fromRGB(45, 45, 45)
         Page.CanvasSize = UDim2.new(0, 0, 0, 0)
-        Page.ClipsDescendants = false
 
         local PageGrid = Instance.new("UIGridLayout")
         PageGrid.Parent = Page
         PageGrid.SortOrder = Enum.SortOrder.LayoutOrder
-        PageGrid.CellPadding = UDim2.new(0, 10, 0, 10)
-        PageGrid.CellSize = UDim2.new(0, 125, 0, 30)
+        PageGrid.CellPadding = UDim2.new(0, 8, 0, 8)
+        PageGrid.CellSize = UDim2.new(0, 124, 0, 32)
 
         local TabButton = Instance.new("TextButton")
         TabButton.Parent = TabContainer
         TabButton.BackgroundTransparency = 1
         TabButton.Font = Enum.Font.Code
-        TabButton.Text = name
-        TabButton.TextColor3 = firstPage and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(120, 120, 120)
-        TabButton.TextSize = 15
+        TabButton.Text = name:upper()
+        TabButton.TextColor3 = firstPage and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(100, 100, 100)
+        TabButton.TextSize = 13
         TabButton.Size = UDim2.new(0, 40, 1, 0)
         TabButton.AutomaticSize = Enum.AutomaticSize.X
 
         TabButton.MouseButton1Click:Connect(function()
             for _, v in pairs(PageFolder:GetChildren()) do v.Visible = false end
             for _, v in pairs(TabContainer:GetChildren()) do 
-                if v:IsA("TextButton") then v.TextColor3 = Color3.fromRGB(120, 120, 120) end 
+                if v:IsA("TextButton") then 
+                    TweenService:Create(v, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(100, 100, 100)}):Play()
+                end 
             end
             Page.Visible = true
-            TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            TweenService:Create(TabButton, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
         end)
 
         firstPage = false
@@ -214,149 +229,159 @@ function Library:CreateWindow(title)
 
         local Elements = {}
 
-        local function AddStroke(parent)
-            local Stroke = Instance.new("UIStroke")
-            Stroke.Thickness = 1
-            Stroke.Color = Color3.fromRGB(45, 45, 45)
-            Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-            Stroke.Parent = parent
+        local function StyleElement(obj)
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 4)
+            corner.Parent = obj
+
+            local stroke = Instance.new("UIStroke")
+            stroke.Thickness = 1
+            stroke.Color = Color3.fromRGB(40, 40, 45)
+            stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            stroke.Parent = obj
+
+            obj.MouseEnter:Connect(function()
+                TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(80, 80, 90)}):Play()
+            end)
+            obj.MouseLeave:Connect(function()
+                TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(40, 40, 45)}):Play()
+            end)
         end
 
-        function Elements:CreateButton(text, desc, callback)
+        function Elements:AddButton(text, desc, callback)
             local Button = Instance.new("TextButton")
             Button.Parent = Page
-            Button.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
+            Button.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
             Button.BorderSizePixel = 0
             Button.Font = Enum.Font.Code
             Button.Text = text
             Button.TextColor3 = Color3.fromRGB(200, 200, 200)
-            Button.TextSize = 13
-            AddStroke(Button)
+            Button.TextSize = 12
+            StyleElement(Button)
 
             Button.MouseEnter:Connect(function() Typewrite(desc or text) end)
             Button.MouseLeave:Connect(ResetTitle)
             Button.MouseButton1Click:Connect(callback)
+            
+            RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
-        function Elements:CreateToggle(text, desc, default, callback)
+        function Elements:AddToggle(text, desc, default, callback)
             local state = default
             local Toggle = Instance.new("TextButton")
             Toggle.Parent = Page
-            Toggle.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
+            Toggle.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
             Toggle.BorderSizePixel = 0
             Toggle.Font = Enum.Font.Code
             Toggle.Text = text
             Toggle.TextColor3 = Color3.fromRGB(200, 200, 200)
-            Toggle.TextSize = 13
-            AddStroke(Toggle)
+            Toggle.TextSize = 12
+            StyleElement(Toggle)
 
             local Indicator = Instance.new("Frame")
-            Indicator.Size = UDim2.new(1, 0, 0, 1)
-            Indicator.Position = UDim2.new(0, 0, 1, -1)
+            Indicator.Size = UDim2.new(1, 0, 0, 2)
+            Indicator.Position = UDim2.new(0, 0, 1, -2)
             Indicator.BorderSizePixel = 0
-            Indicator.BackgroundColor3 = state and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 60, 60)
+            Indicator.BackgroundColor3 = state and Color3.fromRGB(80, 220, 120) or Color3.fromRGB(220, 80, 80)
             Indicator.Parent = Toggle
+
+            local IndCorner = Instance.new("UICorner")
+            IndCorner.CornerRadius = UDim.new(0, 4)
+            IndCorner.Parent = Indicator
 
             Toggle.MouseEnter:Connect(function() Typewrite(desc or text) end)
             Toggle.MouseLeave:Connect(ResetTitle)
             Toggle.MouseButton1Click:Connect(function()
                 state = not state
-                Indicator.BackgroundColor3 = state and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 60, 60)
+                TweenService:Create(Indicator, TweenInfo.new(0.2), {BackgroundColor3 = state and Color3.fromRGB(80, 220, 120) or Color3.fromRGB(220, 80, 80)}):Play()
                 callback(state)
             end)
+
+            RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
-        function Elements:CreateTextBox(placeholder, desc, callback)
+        function Elements:AddTextBox(placeholder, desc, callback)
             local Box = Instance.new("TextBox")
             Box.Parent = Page
-            Box.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-            Box.BackgroundTransparency = 0.5
+            Box.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
             Box.BorderSizePixel = 0
             Box.Font = Enum.Font.Code
             Box.PlaceholderText = placeholder
+            Box.PlaceholderColor3 = Color3.fromRGB(80, 80, 80)
             Box.Text = ""
             Box.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Box.TextSize = 13
+            Box.TextSize = 12
             Box.ClearTextOnFocus = false
-            AddStroke(Box)
+            StyleElement(Box)
 
             Box.MouseEnter:Connect(function() Typewrite(desc or placeholder) end)
             Box.MouseLeave:Connect(ResetTitle)
-
-            Box.FocusLost:Connect(function(enterPressed)
-                local input = Box.Text
+            Box.FocusLost:Connect(function()
+                callback(Box.Text)
                 Box.Text = ""
-                callback(input)
             end)
 
+            RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
-        function Elements:CreateDropdown(name, options, callback)
+        function Elements:AddDropdown(name, options, callback)
             local Dropdown = Instance.new("TextButton")
-            Dropdown.Name = name .. "Dropdown"
             Dropdown.Parent = Page
-            Dropdown.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
+            Dropdown.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
             Dropdown.BorderSizePixel = 0
             Dropdown.Font = Enum.Font.Code
-            Dropdown.Text = name
+            Dropdown.Text = name .. " >"
             Dropdown.TextColor3 = Color3.fromRGB(200, 200, 200)
-            Dropdown.TextSize = 13
-            AddStroke(Dropdown)
+            Dropdown.TextSize = 12
+            StyleElement(Dropdown)
 
             local Container = Instance.new("ScrollingFrame")
-            Container.Name = "Container"
             Container.Parent = Dropdown
-            Container.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+            Container.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
             Container.BorderSizePixel = 0
-            Container.Position = UDim2.new(0, 0, 1, 1) -- Opens DOWN
+            Container.Position = UDim2.new(0, 0, 1, 4)
             Container.Size = UDim2.new(1, 0, 0, 100)
             Container.Visible = false
-            Container.ZIndex = 50
+            Container.ZIndex = 10
             Container.ScrollBarThickness = 2
-            Container.ScrollBarImageColor3 = Color3.fromRGB(45, 45, 45)
-            AddStroke(Container)
+            Container.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60)
+            StyleElement(Container)
 
             local UIList = Instance.new("UIListLayout")
             UIList.Parent = Container
             UIList.SortOrder = Enum.SortOrder.LayoutOrder
 
-            local currentOption = ""
             local open = false
-            
             Dropdown.MouseButton1Click:Connect(function()
                 open = not open
                 Container.Visible = open
+                Dropdown.Text = open and name .. " <" or name .. " >"
             end)
 
             for _, option in pairs(options) do
                 local OptBtn = Instance.new("TextButton")
                 OptBtn.Size = UDim2.new(1, 0, 0, 25)
-                OptBtn.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
-                OptBtn.BorderSizePixel = 0
+                OptBtn.BackgroundTransparency = 1
                 OptBtn.Font = Enum.Font.Code
                 OptBtn.Text = option
-                OptBtn.TextColor3 = Color3.fromRGB(120, 120, 120) -- Default Darker
-                OptBtn.TextSize = 12
+                OptBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
+                OptBtn.TextSize = 11
                 OptBtn.Parent = Container
-                OptBtn.ZIndex = 51
+                OptBtn.ZIndex = 11
 
                 OptBtn.MouseButton1Click:Connect(function()
-                    currentOption = option
-                    for _, v in pairs(Container:GetChildren()) do
-                        if v:IsA("TextButton") then
-                            v.TextColor3 = (v.Text == option) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(120, 120, 120)
-                        end
-                    end
+                    callback(option)
+                    Dropdown.Text = option .. " >"
                     open = false
                     Container.Visible = false
-                    callback(option)
                 end)
-                Container.CanvasSize = UDim2.new(0, 0, 0, UIList.AbsoluteContentSize.Y)
             end
             
+            Container.CanvasSize = UDim2.new(0, 0, 0, UIList.AbsoluteContentSize.Y)
+            RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
