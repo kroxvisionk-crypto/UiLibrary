@@ -38,34 +38,16 @@ function Library:CreateWindow(title)
     TopBar.Size = UDim2.new(1, 0, 0, 25)
     TopBar.BorderSizePixel = 0
 
-    local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Parent = TopBar
-    TitleLabel.BackgroundTransparency = 1
-    TitleLabel.Position = UDim2.new(0, 10, 0, 0)
-    TitleLabel.Size = UDim2.new(1, -70, 1, 0)
-    TitleLabel.Font = Enum.Font.Code
-    TitleLabel.Text = title or "UI Library"
-    TitleLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-    TitleLabel.TextSize = 13
-    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    -- TYPEWRITER LOGIC
-    local currentTypewrite = 0
-    local function Typewrite(text)
-        currentTypewrite = currentTypewrite + 1
-        local thisId = currentTypewrite
-        TitleLabel.Text = ""
-        for i = 1, #text do
-            if thisId ~= currentTypewrite then return end
-            TitleLabel.Text = string.sub(text, 1, i)
-            task.wait(0.01)
-        end
-    end
-
-    local function ResetTitle()
-        currentTypewrite = currentTypewrite + 1
-        TitleLabel.Text = title
-    end
+    local Title = Instance.new("TextLabel")
+    Title.Parent = TopBar
+    Title.BackgroundTransparency = 1
+    Title.Position = UDim2.new(0, 10, 0, 0)
+    Title.Size = UDim2.new(1, -70, 1, 0)
+    Title.Font = Enum.Font.Code
+    Title.Text = title or "UI Library"
+    Title.TextColor3 = Color3.fromRGB(220, 220, 220)
+    Title.TextSize = 13
+    Title.TextXAlignment = Enum.TextXAlignment.Left
 
     local Controls = Instance.new("Frame")
     Controls.Name = "Controls"
@@ -74,6 +56,13 @@ function Library:CreateWindow(title)
     Controls.Position = UDim2.new(1, -55, 0, 0)
     Controls.Size = UDim2.new(0, 50, 1, 0)
     Controls.Visible = false
+
+    local ControlLayout = Instance.new("UIListLayout")
+    ControlLayout.Parent = Controls
+    ControlLayout.FillDirection = Enum.FillDirection.Horizontal
+    ControlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ControlLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    ControlLayout.Padding = UDim.new(0, 4)
 
     local function CreateControlBtn(txt)
         local b = Instance.new("TextButton")
@@ -91,6 +80,7 @@ function Library:CreateWindow(title)
     local maxBtn = CreateControlBtn("□")
 
     local RainbowLine = Instance.new("Frame")
+    RainbowLine.Name = "RainbowLine"
     RainbowLine.Parent = TopBar
     RainbowLine.BorderSizePixel = 0
     RainbowLine.Position = UDim2.new(0, 0, 1, 0)
@@ -99,6 +89,23 @@ function Library:CreateWindow(title)
     RunService.RenderStepped:Connect(function()
         RainbowLine.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
     end)
+
+    local currentTypewrite = 0
+    local function Typewrite(text)
+        currentTypewrite = currentTypewrite + 1
+        local thisId = currentTypewrite
+        Title.Text = ""
+        for i = 1, #text do
+            if thisId ~= currentTypewrite then return end
+            Title.Text = string.sub(text, 1, i)
+            task.wait(0.01)
+        end
+    end
+
+    local function ResetTitle()
+        currentTypewrite = currentTypewrite + 1
+        Title.Text = title
+    end
 
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
@@ -120,12 +127,13 @@ function Library:CreateWindow(title)
     PageFolder.Name = "Pages"
     PageFolder.Parent = Main
 
-    -- Dragging & Window Controls
     local lastClick = 0
     TopBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             local currentTime = tick()
-            if currentTime - lastClick < 0.3 then Controls.Visible = not Controls.Visible end
+            if currentTime - lastClick < 0.3 then
+                Controls.Visible = not Controls.Visible
+            end
             lastClick = currentTime
         end
     end)
@@ -148,6 +156,9 @@ function Library:CreateWindow(title)
             dragging = true
             dragStart = input.Position
             startPos = Main.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
         end
     end)
 
@@ -156,10 +167,6 @@ function Library:CreateWindow(title)
             local delta = input.Position - dragStart
             Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
-    end)
-    
-    UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
     end)
 
     local Tabs = {}
@@ -181,7 +188,7 @@ function Library:CreateWindow(title)
         PageGrid.Parent = Page
         PageGrid.SortOrder = Enum.SortOrder.LayoutOrder
         PageGrid.CellPadding = UDim2.new(0, 10, 0, 10)
-        PageGrid.CellSize = UDim2.new(0, 160, 0, 30)
+        PageGrid.CellSize = UDim2.new(0, 125, 0, 30)
 
         local TabButton = Instance.new("TextButton")
         TabButton.Parent = TabContainer
@@ -190,6 +197,7 @@ function Library:CreateWindow(title)
         TabButton.Text = name
         TabButton.TextColor3 = firstPage and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(120, 120, 120)
         TabButton.TextSize = 15
+        TabButton.Size = UDim2.new(0, 40, 1, 0)
         TabButton.AutomaticSize = Enum.AutomaticSize.X
 
         TabButton.MouseButton1Click:Connect(function()
@@ -224,7 +232,7 @@ function Library:CreateWindow(title)
             Button.TextColor3 = Color3.fromRGB(200, 200, 200)
             Button.TextSize = 13
             AddStroke(Button)
-            
+
             Button.MouseEnter:Connect(function() Typewrite(desc or text) end)
             Button.MouseLeave:Connect(ResetTitle)
             Button.MouseButton1Click:Connect(callback)
@@ -264,6 +272,7 @@ function Library:CreateWindow(title)
             local Box = Instance.new("TextBox")
             Box.Parent = Page
             Box.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+            Box.BackgroundTransparency = 0.5
             Box.BorderSizePixel = 0
             Box.Font = Enum.Font.Code
             Box.PlaceholderText = placeholder
@@ -275,16 +284,19 @@ function Library:CreateWindow(title)
 
             Box.MouseEnter:Connect(function() Typewrite(desc or placeholder) end)
             Box.MouseLeave:Connect(ResetTitle)
+
             Box.FocusLost:Connect(function(enterPressed)
                 local input = Box.Text
                 Box.Text = ""
                 callback(input)
             end)
+
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
-        function Elements:CreateDropdown(name, desc, options, callback)
+        function Elements:CreateDropdown(name, options, callback)
             local Dropdown = Instance.new("TextButton")
+            Dropdown.Name = name .. "Dropdown"
             Dropdown.Parent = Page
             Dropdown.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
             Dropdown.BorderSizePixel = 0
@@ -295,23 +307,25 @@ function Library:CreateWindow(title)
             AddStroke(Dropdown)
 
             local Container = Instance.new("ScrollingFrame")
+            Container.Name = "Container"
             Container.Parent = Dropdown
             Container.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
             Container.BorderSizePixel = 0
-            Container.Position = UDim2.new(0, 0, 1, 1)
+            Container.Position = UDim2.new(0, 0, 1, 1) -- Opens DOWN
             Container.Size = UDim2.new(1, 0, 0, 100)
             Container.Visible = false
             Container.ZIndex = 50
             Container.ScrollBarThickness = 2
+            Container.ScrollBarImageColor3 = Color3.fromRGB(45, 45, 45)
             AddStroke(Container)
 
             local UIList = Instance.new("UIListLayout")
             UIList.Parent = Container
             UIList.SortOrder = Enum.SortOrder.LayoutOrder
 
+            local currentOption = ""
             local open = false
-            Dropdown.MouseEnter:Connect(function() Typewrite(desc or name) end)
-            Dropdown.MouseLeave:Connect(ResetTitle)
+            
             Dropdown.MouseButton1Click:Connect(function()
                 open = not open
                 Container.Visible = open
@@ -324,12 +338,13 @@ function Library:CreateWindow(title)
                 OptBtn.BorderSizePixel = 0
                 OptBtn.Font = Enum.Font.Code
                 OptBtn.Text = option
-                OptBtn.TextColor3 = Color3.fromRGB(120, 120, 120)
+                OptBtn.TextColor3 = Color3.fromRGB(120, 120, 120) -- Default Darker
                 OptBtn.TextSize = 12
                 OptBtn.Parent = Container
                 OptBtn.ZIndex = 51
 
                 OptBtn.MouseButton1Click:Connect(function()
+                    currentOption = option
                     for _, v in pairs(Container:GetChildren()) do
                         if v:IsA("TextButton") then
                             v.TextColor3 = (v.Text == option) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(120, 120, 120)
@@ -339,59 +354,9 @@ function Library:CreateWindow(title)
                     Container.Visible = false
                     callback(option)
                 end)
+                Container.CanvasSize = UDim2.new(0, 0, 0, UIList.AbsoluteContentSize.Y)
             end
-            Container.CanvasSize = UDim2.new(0, 0, 0, #options * 25)
-            Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
-        end
-
-        function Elements:CreateBind(name, desc, defaultBind, callback)
-            local currentBind = defaultBind
-            local BindFrame = Instance.new("Frame")
-            BindFrame.Parent = Page
-            BindFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            BindFrame.BorderSizePixel = 0
-            AddStroke(BindFrame)
-
-            local BindBox = Instance.new("TextBox")
-            BindBox.Parent = BindFrame
-            BindBox.Size = UDim2.new(1, 0, 0, 22)
-            BindBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            BindBox.BorderSizePixel = 0
-            BindBox.Font = Enum.Font.Code
-            BindBox.PlaceholderText = "[" .. tostring(currentBind.Name) .. "]"
-            BindBox.Text = ""
-            BindBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-            BindBox.TextSize = 11
-            AddStroke(BindBox)
-
-            local BindLabel = Instance.new("TextLabel")
-            BindLabel.Parent = BindFrame
-            BindLabel.Size = UDim2.new(1, 0, 0, 32)
-            BindLabel.Position = UDim2.new(0, 0, 0, 22)
-            BindLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            BindLabel.BorderSizePixel = 0
-            BindLabel.Font = Enum.Font.Code
-            BindLabel.Text = name
-            BindLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-            BindLabel.TextSize = 12
-            AddStroke(BindLabel)
-
-            BindBox.MouseEnter:Connect(function() Typewrite(desc or name) end)
-            BindBox.MouseLeave:Connect(ResetTitle)
-            BindBox.FocusLost:Connect(function(enterPressed)
-                if enterPressed then
-                    local newKey = BindBox.Text:upper()
-                    pcall(function()
-                        currentBind = Enum.KeyCode[newKey]
-                        BindBox.PlaceholderText = "[" .. newKey .. "]"
-                    end)
-                    BindBox.Text = ""
-                end
-            end)
-
-            UIS.InputBegan:Connect(function(input, gpe)
-                if not gpe and input.KeyCode == currentBind then callback() end
-            end)
+            
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
