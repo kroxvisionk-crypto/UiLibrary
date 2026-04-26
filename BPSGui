@@ -214,10 +214,10 @@ function Library:CreateWindow(title)
         TabButton.Font = Enum.Font.Code
         TabButton.Text = name:upper()
         TabButton.TextColor3 = firstPage and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(100, 100, 100)
-        TabButton.TextSize = 13
+        TabButton.TextSize = 16
         TabButton.Size = UDim2.new(0, 40, 1, 0)
         TabButton.AutomaticSize = Enum.AutomaticSize.X
-        TabButton.TextScaled = true
+        TabButton.TextScaled = false
 
         TabButton.MouseButton1Click:Connect(function()
             for _, v in pairs(PageFolder:GetChildren()) do v.Visible = false end
