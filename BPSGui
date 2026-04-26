@@ -84,11 +84,24 @@ function Library:CreateWindow(title)
     RainbowLine.Name = "RainbowLine"
     RainbowLine.Parent = TopBar
     RainbowLine.BorderSizePixel = 0
-    RainbowLine.Position = UDim2.new(0, 0, 1, -1)
-    RainbowLine.Size = UDim2.new(1, 0, 0, 1)
+    RainbowLine.Position = UDim2.new(0, 0, 1, -2)
+    RainbowLine.Size = UDim2.new(1, 0, 0, 2)
+
+    local RainbowGradient = Instance.new("UIGradient")
+    RainbowGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+        ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 0)),
+        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0, 255, 0)),
+        ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0, 255, 255)),
+        ColorSequenceKeypoint.new(0.8, Color3.fromRGB(0, 0, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
+    })
+    RainbowGradient.Parent = RainbowLine
 
     RunService.RenderStepped:Connect(function()
-        RainbowLine.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 0.8, 1)
+        local rot = RainbowGradient.Rotation + 1
+        if rot >= 360 then rot = 0 end
+        RainbowGradient.Rotation = rot
     end)
 
     local currentTypewrite = 0
