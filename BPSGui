@@ -19,51 +19,50 @@ function Library:CreateWindow(title)
     local Main = Instance.new("Frame")
     Main.Name = "Main"
     Main.Parent = ScreenGui
-    Main.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
+    Main.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
     Main.Position = UDim2.new(0.5, -275, 0.5, -150)
     Main.Size = UDim2.new(0, 550, 0, 300)
     Main.BorderSizePixel = 0
     Main.ClipsDescendants = true
 
     local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 6)
+    MainCorner.CornerRadius = UDim.new(0, 8)
     MainCorner.Parent = Main
 
     local MainStroke = Instance.new("UIStroke")
-    MainStroke.Thickness = 1.2
-    MainStroke.Color = Color3.fromRGB(45, 45, 50)
+    MainStroke.Thickness = 1.5
+    MainStroke.Color = Color3.fromRGB(35, 35, 40)
     MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     MainStroke.Parent = Main
 
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
     TopBar.Parent = Main
-    TopBar.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
-    TopBar.Size = UDim2.new(1, 0, 0, 30)
+    TopBar.BackgroundColor3 = Color3.fromRGB(8, 8, 10)
+    TopBar.Size = UDim2.new(1, 0, 0, 35)
     TopBar.BorderSizePixel = 0
 
     local TopCorner = Instance.new("UICorner")
-    TopCorner.CornerRadius = UDim.new(0, 6)
+    TopCorner.CornerRadius = UDim.new(0, 8)
     TopCorner.Parent = TopBar
 
     local Title = Instance.new("TextLabel")
     Title.Parent = TopBar
     Title.BackgroundTransparency = 1
-    Title.Position = UDim2.new(0, 12, 0, 0)
-    Title.Size = UDim2.new(1, -80, 1, 0)
+    Title.Position = UDim2.new(0, 15, 0, 0)
+    Title.Size = UDim2.new(1, -100, 1, 0)
     Title.Font = Enum.Font.Code
     Title.Text = title or "UI Library"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextSize = 11
-    Title.TextScaled = true
+    Title.TextSize = 14
     Title.TextXAlignment = Enum.TextXAlignment.Left
 
     local Controls = Instance.new("Frame")
     Controls.Name = "Controls"
     Controls.Parent = TopBar
     Controls.BackgroundTransparency = 1
-    Controls.Position = UDim2.new(1, -60, 0, 0)
-    Controls.Size = UDim2.new(0, 50, 1, 0)
+    Controls.Position = UDim2.new(1, -70, 0, 0)
+    Controls.Size = UDim2.new(0, 60, 1, 0)
     Controls.Visible = false
 
     local ControlLayout = Instance.new("UIListLayout")
@@ -72,17 +71,25 @@ function Library:CreateWindow(title)
     ControlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
     ControlLayout.VerticalAlignment = Enum.VerticalAlignment.Center
     ControlLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    ControlLayout.Padding = UDim.new(0, 8)
+    ControlLayout.Padding = UDim.new(0, 12)
 
-    local function CreateControlBtn(txt)
+    local function CreateControlBtn(txt, color)
         local b = Instance.new("TextButton")
-        b.Size = UDim2.new(0, 18, 0, 18)
+        b.Size = UDim2.new(0, 20, 0, 20)
         b.BackgroundTransparency = 1
         b.Font = Enum.Font.Code
         b.Text = txt
-        b.TextColor3 = Color3.fromRGB(150, 150, 150)
-        b.TextSize = 16
+        b.TextColor3 = color or Color3.fromRGB(180, 180, 180)
+        b.TextSize = 18
         b.Parent = Controls
+        
+        b.MouseEnter:Connect(function()
+            TweenService:Create(b, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+        end)
+        b.MouseLeave:Connect(function()
+            TweenService:Create(b, TweenInfo.new(0.2), {TextColor3 = color or Color3.fromRGB(180, 180, 180)}):Play()
+        end)
+        
         return b
     end
 
@@ -93,11 +100,20 @@ function Library:CreateWindow(title)
     RainbowLine.Name = "RainbowLine"
     RainbowLine.Parent = TopBar
     RainbowLine.BorderSizePixel = 0
-    RainbowLine.Position = UDim2.new(0, 0, 1, -1)
-    RainbowLine.Size = UDim2.new(1, 0, 0, 1)
+    RainbowLine.Position = UDim2.new(0, 0, 1, -2)
+    RainbowLine.Size = UDim2.new(1, 0, 0, 2)
+
+    local UIGradient = Instance.new("UIGradient")
+    UIGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 255))
+    })
+    UIGradient.Parent = RainbowLine
 
     RunService.RenderStepped:Connect(function()
-        RainbowLine.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 0.8, 1)
+        UIGradient.Offset = Vector2.new(math.sin(tick()) * 0.5, 0)
+        RainbowLine.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 0.7, 1)
     end)
 
     local currentTypewrite = 0
@@ -108,7 +124,7 @@ function Library:CreateWindow(title)
         for i = 1, #text do
             if thisId ~= currentTypewrite then return end
             Title.Text = string.sub(text, 1, i)
-            task.wait(0.01)
+            task.wait(0.02)
         end
     end
 
@@ -120,8 +136,8 @@ function Library:CreateWindow(title)
     TabContainer.Name = "TabContainer"
     TabContainer.Parent = Main
     TabContainer.BackgroundTransparency = 1
-    TabContainer.Position = UDim2.new(0, 10, 1, -30)
-    TabContainer.Size = UDim2.new(1, -20, 0, 25)
+    TabContainer.Position = UDim2.new(0, 15, 1, -40)
+    TabContainer.Size = UDim2.new(1, -30, 0, 30)
     TabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     TabContainer.ScrollBarThickness = 0
     TabContainer.ScrollingDirection = Enum.ScrollingDirection.X
@@ -131,7 +147,7 @@ function Library:CreateWindow(title)
     TabList.FillDirection = Enum.FillDirection.Horizontal
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
     TabList.VerticalAlignment = Enum.VerticalAlignment.Center
-    TabList.Padding = UDim.new(0, 15)
+    TabList.Padding = UDim.new(0, 20)
 
     local PageFolder = Instance.new("Folder")
     PageFolder.Name = "Pages"
@@ -151,12 +167,12 @@ function Library:CreateWindow(title)
     minBtn.MouseButton1Click:Connect(function()
         TabContainer.Visible = false
         PageFolder.Parent = nil
-        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 550, 0, 30)}):Play()
+        TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 550, 0, 35)}):Play()
     end)
 
     maxBtn.MouseButton1Click:Connect(function()
         PageFolder.Parent = Main
-        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = UDim2.new(0, 550, 0, 300)}):Play()
+        TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 550, 0, 300)}):Play()
         task.delay(0.3, function() TabContainer.Visible = true end)
     end)
 
@@ -189,45 +205,44 @@ function Library:CreateWindow(title)
         local Page = Instance.new("ScrollingFrame")
         Page.Name = name .. "Page"
         Page.Parent = PageFolder
-        Page.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
-        Page.BackgroundTransparency = 0.2
-        Page.Position = UDim2.new(0, 15, 0, 45)
-        Page.Size = UDim2.new(1, -30, 1, -85)
+        Page.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
+        Page.BackgroundTransparency = 0.4
+        Page.Position = UDim2.new(0, 15, 0, 50)
+        Page.Size = UDim2.new(1, -30, 1, -100)
         Page.Visible = firstPage
         Page.ScrollBarThickness = 2
-        Page.ScrollBarImageColor3 = Color3.fromRGB(45, 45, 45)
+        Page.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 65)
         Page.BorderSizePixel = 0
 
         local PageCorner = Instance.new("UICorner")
-        PageCorner.CornerRadius = UDim.new(0, 6)
+        PageCorner.CornerRadius = UDim.new(0, 8)
         PageCorner.Parent = Page
 
         local PageGrid = Instance.new("UIGridLayout")
         PageGrid.Parent = Page
         PageGrid.SortOrder = Enum.SortOrder.LayoutOrder
-        PageGrid.CellPadding = UDim2.new(0, 8, 0, 8)
-        PageGrid.CellSize = UDim2.new(0, 124, 0, 32)
+        PageGrid.CellPadding = UDim2.new(0, 10, 0, 10)
+        PageGrid.CellSize = UDim2.new(0, 122, 0, 35)
 
         local TabButton = Instance.new("TextButton")
         TabButton.Parent = TabContainer
         TabButton.BackgroundTransparency = 1
         TabButton.Font = Enum.Font.Code
         TabButton.Text = name:upper()
-        TabButton.TextColor3 = firstPage and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(100, 100, 100)
-        TabButton.TextSize = 16
+        TabButton.TextColor3 = firstPage and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(120, 120, 130)
+        TabButton.TextSize = 14
         TabButton.Size = UDim2.new(0, 40, 1, 0)
         TabButton.AutomaticSize = Enum.AutomaticSize.X
-        TabButton.TextScaled = false
 
         TabButton.MouseButton1Click:Connect(function()
             for _, v in pairs(PageFolder:GetChildren()) do v.Visible = false end
             for _, v in pairs(TabContainer:GetChildren()) do 
                 if v:IsA("TextButton") then 
-                    TweenService:Create(v, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(100, 100, 100)}):Play()
+                    TweenService:Create(v, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(120, 120, 130)}):Play()
                 end 
             end
             Page.Visible = true
-            TweenService:Create(TabButton, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+            TweenService:Create(TabButton, TweenInfo.new(0.3), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
         end)
 
         firstPage = false
@@ -237,16 +252,22 @@ function Library:CreateWindow(title)
 
         local function StyleElement(obj)
             local stroke = Instance.new("UIStroke")
-            stroke.Thickness = 1
-            stroke.Color = Color3.fromRGB(40, 40, 45)
+            stroke.Thickness = 1.2
+            stroke.Color = Color3.fromRGB(45, 45, 50)
             stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             stroke.Parent = obj
 
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 4)
+            corner.Parent = obj
+
             obj.MouseEnter:Connect(function()
-                TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(80, 80, 90)}):Play()
+                TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(100, 100, 110)}):Play()
+                TweenService:Create(obj, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30, 30, 35)}):Play()
             end)
             obj.MouseLeave:Connect(function()
-                TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(40, 40, 45)}):Play()
+                TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(45, 45, 50)}):Play()
+                TweenService:Create(obj, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(22, 22, 26)}):Play()
             end)
         end
 
@@ -256,14 +277,25 @@ function Library:CreateWindow(title)
             Button.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
             Button.Font = Enum.Font.Code
             Button.Text = text
-            Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+            Button.TextColor3 = Color3.fromRGB(220, 220, 220)
             Button.TextSize = 12
-            Button.TextScaled = true
             StyleElement(Button)
 
             Button.MouseEnter:Connect(function() Typewrite(desc or text) end)
             Button.MouseLeave:Connect(ResetTitle)
-            Button.MouseButton1Click:Connect(callback)
+            Button.MouseButton1Click:Connect(function()
+                local s = Instance.new("Frame")
+                s.Size = UDim2.new(1, 0, 1, 0)
+                s.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                s.BackgroundTransparency = 0.8
+                s.Parent = Button
+                local c = Instance.new("UICorner")
+                c.CornerRadius = UDim.new(0, 4)
+                c.Parent = s
+                TweenService:Create(s, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+                game.Debris:AddItem(s, 0.3)
+                callback()
+            end)
             
             RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
@@ -276,23 +308,22 @@ function Library:CreateWindow(title)
             Toggle.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
             Toggle.Font = Enum.Font.Code
             Toggle.Text = text
-            Toggle.TextColor3 = Color3.fromRGB(200, 200, 200)
+            Toggle.TextColor3 = Color3.fromRGB(220, 220, 220)
             Toggle.TextSize = 12
-            Toggle.TextScaled = true
             StyleElement(Toggle)
 
             local Indicator = Instance.new("Frame")
-            Indicator.Size = UDim2.new(1, 0, 0, 1)
-            Indicator.Position = UDim2.new(0, 0, 1, -1)
+            Indicator.Size = UDim2.new(1, 0, 0, 2)
+            Indicator.Position = UDim2.new(0, 0, 1, -2)
             Indicator.BorderSizePixel = 0
-            Indicator.BackgroundColor3 = state and Color3.fromRGB(80, 220, 120) or Color3.fromRGB(220, 80, 80)
+            Indicator.BackgroundColor3 = state and Color3.fromRGB(100, 255, 150) or Color3.fromRGB(255, 100, 100)
             Indicator.Parent = Toggle
 
             Toggle.MouseEnter:Connect(function() Typewrite(desc or text) end)
             Toggle.MouseLeave:Connect(ResetTitle)
             Toggle.MouseButton1Click:Connect(function()
                 state = not state
-                TweenService:Create(Indicator, TweenInfo.new(0.2), {BackgroundColor3 = state and Color3.fromRGB(80, 220, 120) or Color3.fromRGB(220, 80, 80)}):Play()
+                TweenService:Create(Indicator, TweenInfo.new(0.3, Enum.EasingStyle.Back), {BackgroundColor3 = state and Color3.fromRGB(100, 255, 150) or Color3.fromRGB(255, 100, 100)}):Play()
                 callback(state)
             end)
 
@@ -306,19 +337,20 @@ function Library:CreateWindow(title)
             Box.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
             Box.Font = Enum.Font.Code
             Box.PlaceholderText = placeholder
-            Box.PlaceholderColor3 = Color3.fromRGB(80, 80, 80)
+            Box.PlaceholderColor3 = Color3.fromRGB(100, 100, 105)
             Box.Text = ""
             Box.TextColor3 = Color3.fromRGB(255, 255, 255)
             Box.TextSize = 12
-            Box.TextScaled = true
             Box.ClearTextOnFocus = false
             StyleElement(Box)
 
             Box.MouseEnter:Connect(function() Typewrite(desc or placeholder) end)
             Box.MouseLeave:Connect(ResetTitle)
-            Box.FocusLost:Connect(function()
-                callback(Box.Text)
-                Box.Text = ""
+            Box.FocusLost:Connect(function(enter)
+                if enter then
+                    callback(Box.Text)
+                    Box.Text = ""
+                end
             end)
 
             RunService.Heartbeat:Wait()
@@ -330,23 +362,29 @@ function Library:CreateWindow(title)
             Dropdown.Parent = Page
             Dropdown.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
             Dropdown.Font = Enum.Font.Code
-            Dropdown.Text = name
-            Dropdown.TextColor3 = Color3.fromRGB(200, 200, 200)
+            Dropdown.Text = name .. " >"
+            Dropdown.TextColor3 = Color3.fromRGB(220, 220, 220)
             Dropdown.TextSize = 12
-            Dropdown.TextScaled = true
             StyleElement(Dropdown)
 
             local Container = Instance.new("ScrollingFrame")
             Container.Parent = Dropdown
-            Container.BackgroundColor3 = Color3.fromRGB(15, 15, 17)
+            Container.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
             Container.BorderSizePixel = 0
-            Container.Position = UDim2.new(0, 0, 1, 4)
-            Container.Size = UDim2.new(1, 0, 0, 100)
+            Container.Position = UDim2.new(0, 0, 1, 5)
+            Container.Size = UDim2.new(1, 0, 0, 120)
             Container.Visible = false
-            Container.ZIndex = 10
+            Container.ZIndex = 50
             Container.ScrollBarThickness = 2
-            Container.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60)
-            StyleElement(Container)
+            Container.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 85)
+            
+            local cCont = Instance.new("UICorner")
+            cCont.CornerRadius = UDim.new(0, 4)
+            cCont.Parent = Container
+            
+            local sCont = Instance.new("UIStroke")
+            sCont.Color = Color3.fromRGB(60, 60, 65)
+            sCont.Parent = Container
 
             local UIList = Instance.new("UIListLayout")
             UIList.Parent = Container
@@ -358,31 +396,35 @@ function Library:CreateWindow(title)
             
             Dropdown.MouseButton1Click:Connect(function()
                 open = not open
+                Dropdown.Text = open and name .. " <" or name .. " >"
                 Container.Visible = open
             end)
 
             for _, option in pairs(options) do
                 local OptBtn = Instance.new("TextButton")
-                OptBtn.Size = UDim2.new(1, 0, 0, 25)
+                OptBtn.Size = UDim2.new(1, 0, 0, 28)
                 OptBtn.BackgroundTransparency = 1
                 OptBtn.Font = Enum.Font.Code
                 OptBtn.Text = option
-                OptBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
+                OptBtn.TextColor3 = Color3.fromRGB(160, 160, 170)
                 OptBtn.TextSize = 11
-                OptBtn.TextScaled = true
                 OptBtn.Parent = Container
-                OptBtn.ZIndex = 11
+                OptBtn.ZIndex = 51
+
+                OptBtn.MouseEnter:Connect(function()
+                    TweenService:Create(OptBtn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0.9}):Play()
+                    OptBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                end)
+                
+                OptBtn.MouseLeave:Connect(function()
+                    TweenService:Create(OptBtn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(160, 160, 170), BackgroundTransparency = 1}):Play()
+                end)
 
                 OptBtn.MouseButton1Click:Connect(function()
-                    for _, v in pairs(Container:GetChildren()) do
-                        if v:IsA("TextButton") then
-                            v.TextColor3 = Color3.fromRGB(130, 130, 130)
-                        end
-                    end
-                    OptBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
                     callback(option)
                     open = false
                     Container.Visible = false
+                    Dropdown.Text = name .. " >"
                 end)
             end
             
