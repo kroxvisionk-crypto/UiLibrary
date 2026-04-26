@@ -27,7 +27,7 @@ function Library:CreateWindow(title)
 
     local MainStroke = Instance.new("UIStroke")
     MainStroke.Thickness = 1
-    MainStroke.Color = Color3.fromRGB(40, 40, 40)
+    MainStroke.Color = Color3.fromRGB(45, 45, 45)
     MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     MainStroke.Parent = Main
 
@@ -47,6 +47,7 @@ function Library:CreateWindow(title)
     Title.Text = title or "UI Library"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.TextSize = 12
+    Title.TextScaled = true
     Title.TextXAlignment = Enum.TextXAlignment.Left
 
     local Controls = Instance.new("Frame")
@@ -87,21 +88,17 @@ function Library:CreateWindow(title)
     RainbowLine.Position = UDim2.new(0, 0, 1, -2)
     RainbowLine.Size = UDim2.new(1, 0, 0, 2)
 
-    local RainbowGradient = Instance.new("UIGradient")
-    RainbowGradient.Color = ColorSequence.new({
+    local UIGradient = Instance.new("UIGradient")
+    UIGradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
-        ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 0)),
-        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0, 255, 0)),
-        ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0, 255, 255)),
-        ColorSequenceKeypoint.new(0.8, Color3.fromRGB(0, 0, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 255))
     })
-    RainbowGradient.Parent = RainbowLine
+    UIGradient.Parent = RainbowLine
 
     RunService.RenderStepped:Connect(function()
-        local rot = RainbowGradient.Rotation + 1
-        if rot >= 360 then rot = 0 end
-        RainbowGradient.Rotation = rot
+        UIGradient.Offset = Vector2.new(math.sin(tick()) * 0.5, 0)
+        RainbowLine.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 0.7, 1)
     end)
 
     local currentTypewrite = 0
@@ -244,8 +241,8 @@ function Library:CreateWindow(title)
             stroke.Parent = obj
 
             obj.MouseEnter:Connect(function()
-                TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(60, 60, 60)}):Play()
-                TweenService:Create(obj, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 25)}):Play()
+                TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(80, 80, 80)}):Play()
+                TweenService:Create(obj, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(22, 22, 22)}):Play()
             end)
             obj.MouseLeave:Connect(function()
                 TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(35, 35, 35)}):Play()
@@ -261,6 +258,7 @@ function Library:CreateWindow(title)
             Button.Text = text
             Button.TextColor3 = Color3.fromRGB(220, 220, 220)
             Button.TextSize = 11
+            Button.TextScaled = true
             StyleElement(Button)
 
             Button.MouseEnter:Connect(function() Typewrite(desc or text) end)
@@ -280,11 +278,12 @@ function Library:CreateWindow(title)
             Toggle.Text = text
             Toggle.TextColor3 = Color3.fromRGB(220, 220, 220)
             Toggle.TextSize = 11
+            Toggle.TextScaled = true
             StyleElement(Toggle)
 
             local Indicator = Instance.new("Frame")
-            Indicator.Size = UDim2.new(0, 2, 1, 0)
-            Indicator.Position = UDim2.new(0, 0, 0, 0)
+            Indicator.Size = UDim2.new(1, 0, 0, 1)
+            Indicator.Position = UDim2.new(0, 0, 1, -1)
             Indicator.BorderSizePixel = 0
             Indicator.BackgroundColor3 = state and Color3.fromRGB(0, 255, 150) or Color3.fromRGB(255, 50, 50)
             Indicator.Parent = Toggle
@@ -311,6 +310,7 @@ function Library:CreateWindow(title)
             Box.Text = ""
             Box.TextColor3 = Color3.fromRGB(255, 255, 255)
             Box.TextSize = 11
+            Box.TextScaled = true
             Box.ClearTextOnFocus = false
             StyleElement(Box)
 
@@ -333,6 +333,7 @@ function Library:CreateWindow(title)
             Dropdown.Text = name
             Dropdown.TextColor3 = Color3.fromRGB(220, 220, 220)
             Dropdown.TextSize = 11
+            Dropdown.TextScaled = true
             StyleElement(Dropdown)
 
             local Container = Instance.new("ScrollingFrame")
@@ -369,6 +370,7 @@ function Library:CreateWindow(title)
                 OptBtn.Text = option
                 OptBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
                 OptBtn.TextSize = 10
+                OptBtn.TextScaled = true
                 OptBtn.Parent = Container
                 OptBtn.ZIndex = 11
 
