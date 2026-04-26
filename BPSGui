@@ -54,7 +54,8 @@ function Library:CreateWindow(title)
     Title.Font = Enum.Font.Code
     Title.Text = title or "UI Library"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextSize = 14
+    Title.TextSize = 11
+    Title.TextScaled = true
     Title.TextXAlignment = Enum.TextXAlignment.Left
 
     local Controls = Instance.new("Frame")
