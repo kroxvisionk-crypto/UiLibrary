@@ -216,6 +216,7 @@ function Library:CreateWindow(title)
         TabButton.TextSize = 13
         TabButton.Size = UDim2.new(0, 40, 1, 0)
         TabButton.AutomaticSize = Enum.AutomaticSize.X
+        TabButton.TextScaled = true
 
         TabButton.MouseButton1Click:Connect(function()
             for _, v in pairs(PageFolder:GetChildren()) do v.Visible = false end
@@ -256,6 +257,7 @@ function Library:CreateWindow(title)
             Button.Text = text
             Button.TextColor3 = Color3.fromRGB(200, 200, 200)
             Button.TextSize = 12
+            Button.TextScaled = true
             StyleElement(Button)
 
             Button.MouseEnter:Connect(function() Typewrite(desc or text) end)
@@ -275,6 +277,7 @@ function Library:CreateWindow(title)
             Toggle.Text = text
             Toggle.TextColor3 = Color3.fromRGB(200, 200, 200)
             Toggle.TextSize = 12
+            Toggle.TextScaled = true
             StyleElement(Toggle)
 
             local Indicator = Instance.new("Frame")
@@ -306,6 +309,7 @@ function Library:CreateWindow(title)
             Box.Text = ""
             Box.TextColor3 = Color3.fromRGB(255, 255, 255)
             Box.TextSize = 12
+            Box.TextScaled = true
             Box.ClearTextOnFocus = false
             StyleElement(Box)
 
@@ -328,6 +332,7 @@ function Library:CreateWindow(title)
             Dropdown.Text = name
             Dropdown.TextColor3 = Color3.fromRGB(200, 200, 200)
             Dropdown.TextSize = 12
+            Dropdown.TextScaled = true
             StyleElement(Dropdown)
 
             local Container = Instance.new("ScrollingFrame")
@@ -363,6 +368,7 @@ function Library:CreateWindow(title)
                 OptBtn.Text = option
                 OptBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
                 OptBtn.TextSize = 11
+                OptBtn.TextScaled = true
                 OptBtn.Parent = Container
                 OptBtn.ZIndex = 11
 
