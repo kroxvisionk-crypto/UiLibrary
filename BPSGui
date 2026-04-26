@@ -50,16 +50,12 @@ function Library:CreateWindow(title)
     Title.Parent = TopBar
     Title.BackgroundTransparency = 1
     Title.Position = UDim2.new(0, 12, 0, 0)
-    Title.Size = UDim2.new(1, -100, 1, 0)
+    Title.Size = UDim2.new(1, -80, 1, 0)
     Title.Font = Enum.Font.Code
     Title.Text = title or "UI Library"
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.TextScaled = true
+    Title.TextSize = 14
     Title.TextXAlignment = Enum.TextXAlignment.Left
-
-    local TitleConstraint = Instance.new("UITextSizeConstraint")
-    TitleConstraint.MaxTextSize = 14
-    TitleConstraint.Parent = Title
 
     local Controls = Instance.new("Frame")
     Controls.Name = "Controls"
@@ -74,6 +70,7 @@ function Library:CreateWindow(title)
     ControlLayout.FillDirection = Enum.FillDirection.Horizontal
     ControlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
     ControlLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    ControlLayout.SortOrder = Enum.SortOrder.LayoutOrder
     ControlLayout.Padding = UDim.new(0, 8)
 
     local function CreateControlBtn(txt)
@@ -141,7 +138,7 @@ function Library:CreateWindow(title)
 
     local lastClick = 0
     TopBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             local currentTime = tick()
             if currentTime - lastClick < 0.3 then
                 Controls.Visible = not Controls.Visible
@@ -162,23 +159,24 @@ function Library:CreateWindow(title)
         task.delay(0.3, function() TabContainer.Visible = true end)
     end)
 
-    -- Dragging logic
     local dragging, dragStart, startPos
     TopBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = Main.Position
         end
     end)
+
     UIS.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
             Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
+
     UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
     end)
@@ -199,6 +197,10 @@ function Library:CreateWindow(title)
         Page.ScrollBarImageColor3 = Color3.fromRGB(45, 45, 45)
         Page.BorderSizePixel = 0
 
+        local PageCorner = Instance.new("UICorner")
+        PageCorner.CornerRadius = UDim.new(0, 6)
+        PageCorner.Parent = Page
+
         local PageGrid = Instance.new("UIGridLayout")
         PageGrid.Parent = Page
         PageGrid.SortOrder = Enum.SortOrder.LayoutOrder
@@ -214,7 +216,6 @@ function Library:CreateWindow(title)
         TabButton.TextSize = 13
         TabButton.Size = UDim2.new(0, 40, 1, 0)
         TabButton.AutomaticSize = Enum.AutomaticSize.X
-        -- No Stroke here as per your request
 
         TabButton.MouseButton1Click:Connect(function()
             for _, v in pairs(PageFolder:GetChildren()) do v.Visible = false end
@@ -232,21 +233,12 @@ function Library:CreateWindow(title)
 
         local Elements = {}
 
-        local function ApplyElementStyle(obj, maxTxt)
-            local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(0, 4)
-            corner.Parent = obj
-
+        local function StyleElement(obj)
             local stroke = Instance.new("UIStroke")
             stroke.Thickness = 1
             stroke.Color = Color3.fromRGB(40, 40, 45)
             stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
             stroke.Parent = obj
-
-            obj.TextScaled = true
-            local constraint = Instance.new("UITextSizeConstraint")
-            constraint.MaxTextSize = maxTxt or 12
-            constraint.Parent = obj
 
             obj.MouseEnter:Connect(function()
                 TweenService:Create(stroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(80, 80, 90)}):Play()
@@ -263,12 +255,14 @@ function Library:CreateWindow(title)
             Button.Font = Enum.Font.Code
             Button.Text = text
             Button.TextColor3 = Color3.fromRGB(200, 200, 200)
-            ApplyElementStyle(Button)
+            Button.TextSize = 12
+            StyleElement(Button)
 
             Button.MouseEnter:Connect(function() Typewrite(desc or text) end)
             Button.MouseLeave:Connect(ResetTitle)
             Button.MouseButton1Click:Connect(callback)
             
+            RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
@@ -280,7 +274,8 @@ function Library:CreateWindow(title)
             Toggle.Font = Enum.Font.Code
             Toggle.Text = text
             Toggle.TextColor3 = Color3.fromRGB(200, 200, 200)
-            ApplyElementStyle(Toggle)
+            Toggle.TextSize = 12
+            StyleElement(Toggle)
 
             local Indicator = Instance.new("Frame")
             Indicator.Size = UDim2.new(1, 0, 0, 1)
@@ -296,6 +291,8 @@ function Library:CreateWindow(title)
                 TweenService:Create(Indicator, TweenInfo.new(0.2), {BackgroundColor3 = state and Color3.fromRGB(80, 220, 120) or Color3.fromRGB(220, 80, 80)}):Play()
                 callback(state)
             end)
+
+            RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
@@ -308,8 +305,9 @@ function Library:CreateWindow(title)
             Box.PlaceholderColor3 = Color3.fromRGB(80, 80, 80)
             Box.Text = ""
             Box.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Box.TextSize = 12
             Box.ClearTextOnFocus = false
-            ApplyElementStyle(Box)
+            StyleElement(Box)
 
             Box.MouseEnter:Connect(function() Typewrite(desc or placeholder) end)
             Box.MouseLeave:Connect(ResetTitle)
@@ -317,6 +315,8 @@ function Library:CreateWindow(title)
                 callback(Box.Text)
                 Box.Text = ""
             end)
+
+            RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
@@ -327,7 +327,8 @@ function Library:CreateWindow(title)
             Dropdown.Font = Enum.Font.Code
             Dropdown.Text = name
             Dropdown.TextColor3 = Color3.fromRGB(200, 200, 200)
-            ApplyElementStyle(Dropdown)
+            Dropdown.TextSize = 12
+            StyleElement(Dropdown)
 
             local Container = Instance.new("ScrollingFrame")
             Container.Parent = Dropdown
@@ -339,17 +340,16 @@ function Library:CreateWindow(title)
             Container.ZIndex = 10
             Container.ScrollBarThickness = 2
             Container.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 60)
-            -- Apply stroke to dropdown container
-            local cStroke = Instance.new("UIStroke")
-            cStroke.Color = Color3.fromRGB(40, 40, 45)
-            cStroke.Parent = Container
+            StyleElement(Container)
 
             local UIList = Instance.new("UIListLayout")
             UIList.Parent = Container
+            UIList.SortOrder = Enum.SortOrder.LayoutOrder
 
             local open = false
             Dropdown.MouseEnter:Connect(function() Typewrite("Dropdown: " .. name) end)
             Dropdown.MouseLeave:Connect(ResetTitle)
+            
             Dropdown.MouseButton1Click:Connect(function()
                 open = not open
                 Container.Visible = open
@@ -362,19 +362,25 @@ function Library:CreateWindow(title)
                 OptBtn.Font = Enum.Font.Code
                 OptBtn.Text = option
                 OptBtn.TextColor3 = Color3.fromRGB(130, 130, 130)
-                OptBtn.TextScaled = true
+                OptBtn.TextSize = 11
                 OptBtn.Parent = Container
-                
-                local optConstraint = Instance.new("UITextSizeConstraint")
-                optConstraint.MaxTextSize = 11
-                optConstraint.Parent = OptBtn
+                OptBtn.ZIndex = 11
 
                 OptBtn.MouseButton1Click:Connect(function()
+                    for _, v in pairs(Container:GetChildren()) do
+                        if v:IsA("TextButton") then
+                            v.TextColor3 = Color3.fromRGB(130, 130, 130)
+                        end
+                    end
+                    OptBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
                     callback(option)
                     open = false
                     Container.Visible = false
                 end)
             end
+            
+            Container.CanvasSize = UDim2.new(0, 0, 0, UIList.AbsoluteContentSize.Y)
+            RunService.Heartbeat:Wait()
             Page.CanvasSize = UDim2.new(0, 0, 0, PageGrid.AbsoluteContentSize.Y)
         end
 
